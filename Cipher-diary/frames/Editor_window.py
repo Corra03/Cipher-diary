@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from dataclasses import dataclass, field
 from datetime import datetime
-
+from meta_dialog import MetaDialog
 # ---------------------------------------------------------------------------
 # Theme definitions
 # ---------------------------------------------------------------------------
@@ -124,6 +124,7 @@ class EditorApp(tk.Tk):
         self._build_editor()
         self._build_status_bar()
         self._build_menu()
+        MetaDialog(self, print, "3/4/5", 1, 1 )
 
     def _build_editor(self):
         """Text widget + scrollbar in a sub-frame for clean layout."""
