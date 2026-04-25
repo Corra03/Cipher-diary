@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from dataclasses import dataclass, field
 from datetime import datetime
-from meta_dialog import MetaDialog
+from entryMoodTagDialog import EntryMoodTagDialog
 # ---------------------------------------------------------------------------
 # Theme definitions
 # ---------------------------------------------------------------------------
@@ -49,6 +49,7 @@ LIGHT_THEME = Theme(
 # ---------------------------------------------------------------------------
 
 class EditorState:
+
     def __init__(self):
         self.current_file: str | None = None
         self.is_modified: bool = False
@@ -91,7 +92,7 @@ class EditorApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.state = EditorState()
-
+        self.ora_inizio = datetime.now().strftime("%H:%M")
         self._configure_window()
         self._configure_style()
         self._build_ui()
@@ -124,7 +125,7 @@ class EditorApp(tk.Tk):
         self._build_editor()
         self._build_status_bar()
         self._build_menu()
-        MetaDialog(self, print, "3/4/5", 1, 1 )
+
 
     def _build_editor(self):
         """Text widget + scrollbar in a sub-frame for clean layout."""
@@ -290,9 +291,12 @@ class EditorApp(tk.Tk):
         row, col = self.text.index(tk.INSERT).split(".")
         self._lbl_cursor.config(text=f"Riga {row}, Col {col}")
 
+    def _get_stats(self):
+        content = self.text.get("1.0", "end-1c")
+        return self.state.count_stats(content)
+
     def _update_stats(self):
-        content = self.text.get("1.0", tk.END)
-        words, chars = self.state.count_stats(content)
+        words, chars = self._get_stats()
         self._lbl_stats.config(text=f"{words} parole · {chars} caratteri")
 
     def _refresh_title(self):
@@ -339,7 +343,7 @@ class EditorApp(tk.Tk):
 
     def _save_file(self):
         if self.state.current_file:
-            self._write_file(self.state.current_file)
+            self._do_save(self.state.current_file)
         else:
             self._save_file_as()
 
@@ -349,7 +353,11 @@ class EditorApp(tk.Tk):
             filetypes=[("File di testo", "*.txt"), ("Tutti i file", "*.*")],
         )
         if path:
-            self._write_file(path)
+            self._do_save(path)
+
+    def _do_save(self, path):
+        self._write_file(path)
+        # <- qui vorrei updatare il db
 
     def _write_file(self, path: str):
         content = self.text.get("1.0", tk.END)
@@ -403,17 +411,20 @@ class EditorApp(tk.Tk):
             "Modifiche non salvate",
             "Il documento ha modifiche non salvate.\nVuoi salvare prima di continuare?",
         )
-        if answer is None:       # Cancel
+        if answer is None:
             return False
-        if answer:               # Yes → save, then proceed
+        if answer:
             self._save_file()
-        return True              # No → discard
+        return True
 
     def _on_close(self):
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         footer = f"\n\n{timestamp}\n"
 
         self.text.insert(tk.END, footer)
+        parole, caratteri = self._get_stats()
+        confirm_dialog = EntryMoodTagDialog(self, print, self.ora_inizio, parole, caratteri)
+        self.wait_window(confirm_dialog)
         self.state.is_modified = True
         if self._confirm_discard():
             self.destroy()

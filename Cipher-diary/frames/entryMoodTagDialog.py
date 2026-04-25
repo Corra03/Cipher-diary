@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
 
+
 TAGS_PREDEFINITI = (
     "università", "lavoro", "stress", "amore", "soldi",
     "studio", "futuro", "riflessioni", "dubbi",
@@ -9,7 +10,7 @@ TAGS_PREDEFINITI = (
     "amicizia", "salute", "viaggi", "creatività", "obiettivi"
 )
 
-class MetaDialog(tk.Toplevel):
+class EntryMoodTagDialog(tk.Toplevel):
     def __init__(self, parent, on_confirm, ora_inizio: str, parole: int, caratteri: int):
         super().__init__(parent)
         self.on_confirm = on_confirm
@@ -18,23 +19,37 @@ class MetaDialog(tk.Toplevel):
         self.parole = parole
         self.caratteri = caratteri
         self.title("Prima di salvare...")
-        self.geometry("350x550")
-        self.resizable(False, False)
+        #self.geometry("350x750")
+
+        #self.resizable(False, False)
+
+
+        self.transient(parent)
         self.grab_set()
+        self.resizable(False, True)
+        screen_h = self.winfo_screenheight()
+        self.geometry(f"350x{min(750, screen_h - 100)}")
+        self.focus_set()
 
         self._build_ui()
+
+
 
     def _build_ui(self):
         self.columnconfigure(0, weight=1)
         container = ttk.Frame(self, padding=20)
-        container.grid(row=0, column=0, sticky="nsew")
+        container.grid(row=0, column=0, sticky="sewn")
         container.columnconfigure(0, weight=1)
+        #container.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
 
         self._build_titolo(container, row=0)
         self._build_info_automatiche(container, row=3)
         self._build_mood(container, row=7)
         self._build_tags(container, row=9)
-        self._build_confirm_btn(container, row=15)
+        self._build_psw(container, row =17)
+        self._build_confirm_btn(container, row=22)
 
     def _build_titolo(self, parent, row):
         ttk.Label(parent, text="Titolo (opzionale)").grid(
@@ -87,7 +102,6 @@ class MetaDialog(tk.Toplevel):
     def _build_tags(self, parent, row):
         ttk.Label(parent, text="Tag").grid(row=row, column=0, sticky="w", pady=(0, 5))
 
-        # frame scrollabile per le checkbox
         tags_frame = ttk.Frame(parent)
         tags_frame.grid(row=row + 1, column=0, sticky="ew", pady=(0, 10))
 
@@ -109,17 +123,26 @@ class MetaDialog(tk.Toplevel):
         ttk.Button(parent, text="Salva", command=self._confirm).grid(
             row=row, column=0, sticky="ew", pady=(10, 0))
 
+
+    def _build_psw (self, parent, row):
+        ttk.Label(parent, text="password db").grid(
+            row=row, column=0, sticky="w", pady=(0, 2))
+        self.entry_psw = ttk.Entry(parent)
+        self.entry_psw.grid(row=row+1, column=0, sticky="ew", pady=(0, 15))
+
     def _confirm(self):
         tags_selezionati = [tag for tag, var in self.tag_vars.items() if var.get()]
         tags_custom = [t.strip() for t in self.entry_tags_custom.get().split(",") if t.strip()]
         tutti_i_tag = tags_selezionati + tags_custom
+
         meta = {
             "titolo": self.entry_titolo.get().strip() or None,
             "data": self._data,
             "ora_inizio": self.ora_inizio,
             "ora_fine": self._ora_fine,
-            "mood": self.mood_var.get() or None,  # None se non selezionato
+            "mood": self.mood_var.get() or None,
             "tag": tutti_i_tag
         }
         self.on_confirm(meta)
         self.destroy()
+
