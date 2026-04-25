@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import ttk
 from . import utils as ut
+from app.Editor_window import EditorApp
 class NewFrame(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -27,7 +28,9 @@ class NewFrame(tk.Frame):
             if entry_confirm:
                 psw2 = entry_confirm.get()
                 if psw1 == psw2 and psw1 != "":
-                    print("Password corretta")
+                    self.winfo_toplevel().destroy()
+                    app = EditorApp()
+                    app.mainloop()
                 else:
                     print("Le password non coincidono")
             else:
@@ -36,7 +39,6 @@ class NewFrame(tk.Frame):
                 else:
                     print("Password vuota")
 
-            # Bottone conferma
 
         ut.confirmation_btn(self, command=confirm_psw)
 

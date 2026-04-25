@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from entryMoodTagDialog import EntryMoodTagDialog
+from logic.entryMoodTagDialog import EntryMoodTagDialog
 # ---------------------------------------------------------------------------
 # Theme definitions
 # ---------------------------------------------------------------------------

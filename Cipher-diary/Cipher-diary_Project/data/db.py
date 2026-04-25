@@ -3,7 +3,7 @@ import sqlite3
 import tempfile
 import os
 from pathlib import Path
-from crypto import encrypt, decrypt
+from core.cyber import encrypt, decrypt
 
 DB_ENC_PATH = Path("diario.db.enc")
 

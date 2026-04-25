@@ -1,8 +1,8 @@
 # main.py
 import tkinter as tk
-from frames.menu_frame import MenuFrame
-from frames.new_frame import NewFrame
-from frames.read_frame import ReadFrame
+from ui.menu_frame import MenuFrame
+from ui.new_frame import NewFrame
+from ui.read_frame import ReadFrame
 
 class App(tk.Tk):
     def __init__(self):
