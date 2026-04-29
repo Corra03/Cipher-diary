@@ -3,6 +3,7 @@ from tkinter import ttk, filedialog, messagebox
 from dataclasses import dataclass
 from datetime import datetime
 from logic.entryMoodTagDialog import EntryMoodTagDialog
+from core.crypto import encrypt, decrypt
 # ---------------------------------------------------------------------------
 # Theme definitions
 # ---------------------------------------------------------------------------
@@ -80,7 +81,7 @@ class EditorState:
 # Main application
 # ---------------------------------------------------------------------------
 
-class EditorApp(tk.Tk):
+class EditorApp(tk.Tk ):
     """
     Root window. Owns the state and wires together UI and logic.
     Delegates UI construction to _build_ui() and event handling to _bind_events().
@@ -89,8 +90,9 @@ class EditorApp(tk.Tk):
     APP_TITLE = "Editor"
     MIN_WIDTH, MIN_HEIGHT = 500, 350
 
-    def __init__(self):
+    def __init__(self, psw, path= None):
         super().__init__()
+        self.psw = psw
         self.state = EditorState()
         self.ora_inizio = datetime.now().strftime("%H:%M")
         self._configure_window()
@@ -98,7 +100,10 @@ class EditorApp(tk.Tk):
         self._build_ui()
         self._bind_events()
         self._apply_theme(self.state.theme)
-        self._new_file()
+        if path == None:
+            self._new_file()
+        else:
+            self._load_file(path)
 
     # ------------------------------------------------------------------
     # Window / style setup
@@ -320,17 +325,20 @@ class EditorApp(tk.Tk):
         self.state.is_modified = False
         self._refresh_title()
         self._update_stats()
+
     def _open_file(self):
         if not self._confirm_discard():
             return
         path = filedialog.askopenfilename(
             filetypes=[("File di testo", "*.txt"), ("Tutti i file", "*.*")]
         )
-        if not path:
-            return
+        if path:
+            self._load_file(path)
+
+    def _load_file(self, path: str):
         try:
-            with open(path, "r", encoding="utf-8") as fh:
-                content = fh.read()
+            with open(path, "rb") as fh:
+                content = decrypt(fh.read(), self.psw).decode("utf-8")
         except OSError as exc:
             messagebox.showerror("Errore", f"Impossibile aprire il file:\n{exc}")
             return
@@ -355,15 +363,12 @@ class EditorApp(tk.Tk):
         if path:
             self._do_save(path)
 
-    def _do_save(self, path):
-        self._write_file(path)
-        # <- qui vorrei updatare il db
-
-    def _write_file(self, path: str):
+    def _do_save(self, path: str):
         content = self.text.get("1.0", tk.END)
         try:
-            with open(path, "w", encoding="utf-8") as fh:
-                fh.write(content)
+            encrypted = encrypt(content, self.psw)
+            with open(path, "wb") as fh:
+                fh.write(encrypted)
         except OSError as exc:
             messagebox.showerror("Errore", f"Impossibile salvare il file:\n{exc}")
             return

@@ -8,19 +8,21 @@ class MenuFrame(tk.Frame):
         super().__init__(parent)
         self._build_ui()
     def go_to_read(self):
-        def read_action():
-            file_path = filedialog.askopenfilename(
-                title="Seleziona un file",
-                filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
-            )
+        self.master.show_frame("read")
 
-            return file_path
+    '''        def read_action():
+                file_path = filedialog.askopenfilename(
+                    title="Seleziona un file",
+                    filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
+                )
 
-        file_path = read_action()
-        if file_path:
-            read_frame = self.master._frames["read"]
-            read_frame.set_file(file_path)
-            self.master.show_frame("read")
+                return file_path
+
+            file_path = read_action()
+            if file_path:
+                read_frame = self.master._frames["read"]
+                read_frame.set_file(file_path)
+                self.master.show_frame("read")'''
 
     def _build_ui(self):
 

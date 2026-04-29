@@ -1,5 +1,6 @@
 # main.py
 import tkinter as tk
+from tkinter import filedialog
 from ui.menu_frame import MenuFrame
 from ui.new_frame import NewFrame
 from ui.read_frame import ReadFrame
@@ -26,9 +27,16 @@ class App(tk.Tk):
             self._frames[name] = frame
 
     def show_frame(self, name):
+        if name == "read":
+            path = filedialog.askopenfilename(
+                filetypes=[("File di testo", "*.txt"), ("Tutti i file", "*.*")]
+            )
+            if not path:
+                return
+            self._frames["read"].set_path(path)
         self._frames[name].tkraise()
 
-
+c
 if __name__ == "__main__":
     app = App()
     app.mainloop()

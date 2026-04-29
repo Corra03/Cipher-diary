@@ -29,7 +29,7 @@ class NewFrame(tk.Frame):
                 psw2 = entry_confirm.get()
                 if psw1 == psw2 and psw1 != "":
                     self.winfo_toplevel().destroy()
-                    app = EditorApp()
+                    app = EditorApp(psw1)
                     app.mainloop()
                 else:
                     print("Le password non coincidono")

@@ -19,16 +19,13 @@ class EntryMoodTagDialog(tk.Toplevel):
         self.parole = parole
         self.caratteri = caratteri
         self.title("Prima di salvare...")
-        #self.geometry("350x750")
-
         #self.resizable(False, False)
-
-
         self.transient(parent)
         self.grab_set()
         self.resizable(False, True)
-        screen_h = self.winfo_screenheight()
-        self.geometry(f"350x{min(750, screen_h - 100)}")
+        #screen_h = self.winfo_screenheight()
+        self.geometry("350x750")
+
         self.focus_set()
 
         self._build_ui()

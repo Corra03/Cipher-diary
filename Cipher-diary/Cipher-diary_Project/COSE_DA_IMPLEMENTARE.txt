@@ -1,3 +1,5 @@
+MEDI:
+
 1. NOTE A LATO
 2. AUTOSAVE
 3. TOGLI DALLA CRONOLOGIA RECENTE
@@ -7,3 +9,45 @@
 7. PIù COSE DA INSERIRE TIPO STILE EMOJI O EMOJI CINESI (.-.)
 8. BECKUP SUL CLOUD AUTOMATIZZATO?
 9. SQLlight metadati (Titolo orario mood modd finale tag luogo di scrittura)
+10. farla un app
+
+LUNGHI:
+
+1. GESIONALE DI DIARI:
+    quando si crea un diario si instaznzia il db con la psw e si decreta dov'è
+    c'è un file di sistema che mappa quali diari ci sono e dove sono
+    i diari hanno una struttura folder pagine foder interno con db
+    quando apri l'app ti chiede quale vuoi aprire o se farne uno nuovo
+    si può configurare diversamente, se è un diario ci sarà il coso del mood e il db altrimenti no
+    puoi setupparlo con o senza psw
+
+
+
+
+Cipher-diary_Project/
+│
+├── app/
+│   ├── __init__.py
+│   ├── db_controller.py
+│   └── Editor_window.py
+│
+├── core/
+│   ├── __init__.py
+│   └── crypto.py
+│
+├── data/
+│   └── db.py
+│
+├── logic/
+│   ├── __init__.py
+│   └── entryMoodTagDialog.py
+│
+├── ui/
+│   ├── menu_frame.py
+│   ├── new_frame.py
+│   ├── read_frame.py
+│   └── utils.py
+│
+├── __init__.py
+├── __init__Editor_for_testing.py
+└── COSE_DA_IMPLEMENTARE.txt

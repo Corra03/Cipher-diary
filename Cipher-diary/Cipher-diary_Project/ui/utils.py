@@ -15,14 +15,14 @@ def create_password_form(parent, row_start=0, with_confirmation=False):
     entry = ttk.Entry(parent, show="*")
     entry.grid(row=row_start + 1, column=0, padx=40, pady=5)
 
-    entry_confirm = None
+    if not with_confirmation:
+        return entry
 
-    if with_confirmation:
-        label2 = ttk.Label(parent, text="Conferma la password")
-        label2.grid(row=row_start + 2, column=0, pady=(5, 0))
+    label2 = ttk.Label(parent, text="Conferma la password")
+    label2.grid(row=row_start + 2, column=0, pady=(5, 0))
 
-        entry_confirm = ttk.Entry(parent, show="*")
-        entry_confirm.grid(row=row_start + 3, column=0, padx=40, pady=5)
+    entry_confirm = ttk.Entry(parent, show="*")
+    entry_confirm.grid(row=row_start + 3, column=0, padx=40, pady=5)
 
     return entry, entry_confirm
 
