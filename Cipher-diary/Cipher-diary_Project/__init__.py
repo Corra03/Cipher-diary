@@ -36,7 +36,7 @@ class App(tk.Tk):
             self._frames["read"].set_path(path)
         self._frames[name].tkraise()
 
-c
+
 if __name__ == "__main__":
     app = App()
     app.mainloop()

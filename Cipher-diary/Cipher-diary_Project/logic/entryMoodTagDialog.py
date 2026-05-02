@@ -140,6 +140,7 @@ class EntryMoodTagDialog(tk.Toplevel):
             "mood": self.mood_var.get() or None,
             "tag": tutti_i_tag
         }
-        self.on_confirm(meta)
+        psw = self.entry_psw.get()
+        self.on_confirm(psw, meta)
         self.destroy()
 

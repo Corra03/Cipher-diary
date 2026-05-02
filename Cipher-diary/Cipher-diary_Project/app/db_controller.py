@@ -1,14 +1,16 @@
-from data import db as Database
+# controller.py
 from pathlib import Path
-
-DB_PATH = Path("diario.db.enc")
-
-class DiarioService:
-    def __init__(self, get_password_fn):
-        self._get_password = get_password_fn
-        self._db: Database | None = None
+from data.db import Database, DEFAULT_DB_ENC_PATH
 
 
-    def build_db(self, psw, meta):
-        try:
-            Database._load()
+def salva_pagina(
+        filename: str,
+        password: str,
+        meta: dict,
+        db_path: Path = DEFAULT_DB_ENC_PATH,
+) -> None:
+
+    pagina = {**meta, "filename": filename}
+
+    with Database(password=password, db_path=db_path) as db:
+        db.insert_pagina(pagina)

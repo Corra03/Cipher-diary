@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from dataclasses import dataclass
 from datetime import datetime
+import os
+from app.db_controller import salva_pagina
 from logic.entryMoodTagDialog import EntryMoodTagDialog
 from core.crypto import encrypt, decrypt
 # ---------------------------------------------------------------------------
@@ -349,6 +351,24 @@ class EditorApp(tk.Tk ):
         self._refresh_title()
         self._update_stats()
 
+    def waiting_for_file_name(self, psw, meta):
+        self._pending_psw = psw
+        parole, caratteri = self._get_stats()
+        meta.update({
+            "parole": parole,
+            "caratteri": caratteri
+        })
+
+
+        self._pending_meta = meta
+
+
+    def add_to_db(self, file_name):
+        salva_pagina(
+            filename=file_name,
+            password=self._pending_psw,
+            meta=self._pending_meta
+        )
     def _save_file(self):
         if self.state.current_file:
             self._do_save(self.state.current_file)
@@ -364,6 +384,7 @@ class EditorApp(tk.Tk ):
             self._do_save(path)
 
     def _do_save(self, path: str):
+        file_name = os.path.basename(path)
         content = self.text.get("1.0", tk.END)
         try:
             encrypted = encrypt(content, self.psw)
@@ -374,6 +395,7 @@ class EditorApp(tk.Tk ):
             return
         self.state.current_file = path
         self.state.is_modified = False
+        self.add_to_db(file_name)
         self._refresh_title()
 
     # ------------------------------------------------------------------
@@ -422,18 +444,21 @@ class EditorApp(tk.Tk ):
             self._save_file()
         return True
 
+    def stampa(*args):
+        for arg in args:
+            print(arg)
+
     def _on_close(self):
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         footer = f"\n\n{timestamp}\n"
 
         self.text.insert(tk.END, footer)
         parole, caratteri = self._get_stats()
-        confirm_dialog = EntryMoodTagDialog(self, print, self.ora_inizio, parole, caratteri)
+        confirm_dialog = EntryMoodTagDialog(self, self.waiting_for_file_name, self.ora_inizio, parole, caratteri)
         self.wait_window(confirm_dialog)
         self.state.is_modified = True
         if self._confirm_discard():
             self.destroy()
-
     def _show_about(self):
         messagebox.showinfo(
             "Informazioni",

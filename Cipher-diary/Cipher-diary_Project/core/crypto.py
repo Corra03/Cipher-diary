@@ -16,11 +16,14 @@ def derive_key(psw, salt):
     key = base64.urlsafe_b64encode(kdf.derive(psw))
     return key
 
-def encrypt(text, psw):
+def encrypt(data, psw):
     salt = os.urandom(16)
     key = derive_key(psw, salt)
     f = Fernet(key)
-    token = f.encrypt(text.encode("utf-8"))
+    if isinstance(data, str):
+        data = data.encode("utf-8")
+
+    token = f.encrypt(data)
     return salt + token
 
 def decrypt(data, psw):
