@@ -6,6 +6,7 @@ import os
 from app.db_controller import salva_pagina
 from logic.entryMoodTagDialog import EntryMoodTagDialog
 from core.crypto import encrypt, decrypt
+import logic.autosave as autosave
 # ---------------------------------------------------------------------------
 # Theme definitions
 # ---------------------------------------------------------------------------
@@ -106,6 +107,8 @@ class EditorApp(tk.Tk ):
             self._new_file()
         else:
             self._load_file(path)
+        self._check_autosave_on_startup()
+        self._start_autosave()
 
     # ------------------------------------------------------------------
     # Window / style setup
@@ -390,6 +393,7 @@ class EditorApp(tk.Tk ):
             encrypted = encrypt(content, self.psw)
             with open(path, "wb") as fh:
                 fh.write(encrypted)
+            autosave.delete()
         except OSError as exc:
             messagebox.showerror("Errore", f"Impossibile salvare il file:\n{exc}")
             return
@@ -397,6 +401,37 @@ class EditorApp(tk.Tk ):
         self.state.is_modified = False
         self.add_to_db(file_name)
         self._refresh_title()
+
+    # ---------------------------------------------------------------------------
+    # Autosave
+    # ---------------------------------------------------------------------------
+    def _check_autosave_on_startup(self):
+        if not autosave.exists():
+            return
+        risposta = messagebox.askyesno(
+            "Autosave trovato",
+            "Esiste una sessione non salvata. Vuoi ripristinarla?"
+        )
+        if risposta:
+            content = autosave.load(self.psw)
+            if content:
+                self.text.delete("1.0", tk.END)
+                self.text.insert("1.0", content)
+                self.state.is_modified = True
+            else:
+                messagebox.showwarning("Attenzione", "Autosave corrotto o password errata.")
+                autosave.delete()
+        else:
+            autosave.delete()
+
+    def _start_autosave(self):
+        self._do_autosave()
+
+    def _do_autosave(self):
+        if self.state.is_modified:
+            content = self.text.get("1.0", tk.END)
+            autosave.save(content, self.psw)
+        self.after(autosave.AUTOSAVE_INTERVAL_MS, self._do_autosave)
 
     # ------------------------------------------------------------------
     # Edit helpers
@@ -459,6 +494,8 @@ class EditorApp(tk.Tk ):
         self.state.is_modified = True
         if self._confirm_discard():
             self.destroy()
+        autosave.delete()
+
     def _show_about(self):
         messagebox.showinfo(
             "Informazioni",
