@@ -32,5 +32,5 @@ def confirmation_btn(parent, command):
         text="Conferma",
         command=command
     )
-    btn.grid(row=6, column=0, padx=20, pady=15)
+    btn.grid(row=5, column=0, padx=20, pady=15)
     return btn

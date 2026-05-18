@@ -4,14 +4,14 @@ import tempfile
 import os
 from pathlib import Path
 from core.crypto import encrypt, decrypt
+from core.config import cfg
 
-DEFAULT_DB_ENC_PATH = Path("diario.db.enc")
 
 
 class Database:
-    def __init__(self, password: str, db_path: Path = DEFAULT_DB_ENC_PATH):
+    def __init__(self, password: str, db_path=None):
         self.password = password
-        self.db_path = db_path
+        self.db_path = db_path or cfg.diary_path
         self._tmp_fd, tmp_name = tempfile.mkstemp(suffix=".db")
         os.close(self._tmp_fd)
         self._tmp_path = Path(tmp_name)
@@ -83,6 +83,8 @@ class Database:
         """, (tag.strip(),)).fetchall()
 
     def close(self):
+        if self.conn is None:
+            return
         if self.conn:
             self.conn.close()
             self.conn = None

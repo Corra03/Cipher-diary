@@ -1,13 +1,13 @@
 # controller.py
 from pathlib import Path
-from data.db import Database, DEFAULT_DB_ENC_PATH
-
+from data.db import Database
+from core.config import cfg
 
 def salva_pagina(
         filename: str,
         password: str,
         meta: dict,
-        db_path: Path = DEFAULT_DB_ENC_PATH,
+        db_path: Path = cfg.diary_path
 ) -> None:
 
     pagina = {**meta, "filename": filename}

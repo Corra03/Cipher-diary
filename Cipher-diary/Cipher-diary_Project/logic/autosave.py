@@ -1,27 +1,25 @@
-# autosave.py
-from pathlib import Path
 from core.crypto import encrypt, decrypt
+from core.config import cfg, init_config
 
-AUTOSAVE_PATH = Path(".autosave.enc")
-AUTOSAVE_INTERVAL_MS = 30_000  # 30 secondi
+AUTOSAVE_INTERVAL_MS = 30_000
 
+def _path():
+    c = cfg
+    return c.autosave_path
 
 def save(content: str, password: str) -> None:
-    AUTOSAVE_PATH.write_bytes(encrypt(content.encode(), password))
-
+    _path().write_bytes(encrypt(content.encode(), password))
 
 def load(password: str) -> str | None:
-    if not AUTOSAVE_PATH.exists():
+    if not _path().exists():
         return None
     try:
-        return decrypt(AUTOSAVE_PATH.read_bytes(), password).decode()
+        return decrypt(_path().read_bytes(), password).decode()
     except Exception:
         return None
 
-
 def delete() -> None:
-    AUTOSAVE_PATH.unlink(missing_ok=True)
-
+    _path().unlink(missing_ok=True)
 
 def exists() -> bool:
-    return AUTOSAVE_PATH.exists()
+    return _path().exists()

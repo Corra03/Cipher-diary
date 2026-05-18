@@ -7,6 +7,7 @@ from app.db_controller import salva_pagina
 from logic.entryMoodTagDialog import EntryMoodTagDialog
 from core.crypto import encrypt, decrypt
 import logic.autosave as autosave
+from core.config import init_config
 # ---------------------------------------------------------------------------
 # Theme definitions
 # ---------------------------------------------------------------------------
@@ -54,10 +55,10 @@ LIGHT_THEME = Theme(
 
 class EditorState:
 
-    def __init__(self):
+    def __init__(self, theme_name: str = "light"):
         self.current_file: str | None = None
         self.is_modified: bool = False
-        self.theme: Theme = LIGHT_THEME
+        self.theme: Theme = DARK_THEME if theme_name == "dark" else LIGHT_THEME
 
     def toggle_theme(self) -> Theme:
         self.theme = LIGHT_THEME if self.theme.name == "dark" else DARK_THEME
@@ -85,10 +86,6 @@ class EditorState:
 # ---------------------------------------------------------------------------
 
 class EditorApp(tk.Tk ):
-    """
-    Root window. Owns the state and wires together UI and logic.
-    Delegates UI construction to _build_ui() and event handling to _bind_events().
-    """
 
     APP_TITLE = "Editor"
     MIN_WIDTH, MIN_HEIGHT = 500, 350
@@ -96,7 +93,8 @@ class EditorApp(tk.Tk ):
     def __init__(self, psw, path= None):
         super().__init__()
         self.psw = psw
-        self.state = EditorState()
+        self._cfg = init_config()
+        self.state = EditorState(self._cfg.theme)
         self.ora_inizio = datetime.now().strftime("%H:%M")
         self._configure_window()
         self._configure_style()
@@ -116,7 +114,9 @@ class EditorApp(tk.Tk ):
 
     def _configure_window(self):
         self.title(self.APP_TITLE)
-        self.geometry("760x520")
+        w, h = self._cfg.window_size
+        print(f"[debug] dimensioni da config: {w}x{h}")
+        self.geometry(f"{w}x{h}")
         self.minsize(self.MIN_WIDTH, self.MIN_HEIGHT)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)

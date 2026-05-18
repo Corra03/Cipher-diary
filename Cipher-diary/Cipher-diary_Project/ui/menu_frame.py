@@ -27,8 +27,6 @@ class MenuFrame(tk.Frame):
     def _build_ui(self):
 
 
-
-
         self.columnconfigure(0, weight=1)
         self.rowconfigure((0, 1, 2, 3), weight=1)
 
@@ -41,4 +39,10 @@ class MenuFrame(tk.Frame):
 
         btn_read = ttk.Button(self, text="Read",
                               command=self.go_to_read )
+
         btn_read.grid(row=2, column=0, sticky="nsew", padx=40, pady=10)
+
+        btn_options = ttk.Button(self, text="Options",
+                             command=lambda: self.master.show_frame("options"))
+
+        btn_options.grid(row=3, column=0, sticky="nsew", padx=40, pady=10)
