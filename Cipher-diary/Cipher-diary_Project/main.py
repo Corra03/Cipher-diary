@@ -3,7 +3,7 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog
 from core.config import CONFIG_DIR, CONFIG_FILE, init_config
-
+from ui.ask_diary_folder import _ask_diary_folder
 
 class App(tk.Tk):
     def __init__(self):
@@ -41,9 +41,9 @@ class App(tk.Tk):
 if __name__ == "__main__":
     config_path = CONFIG_DIR / CONFIG_FILE
     first_run = not config_path.exists()
-
-
     cfg = init_config()
+    if first_run:
+        _ask_diary_folder(cfg)
     from ui.menu_frame import MenuFrame
     from ui.new_frame import NewFrame
     from ui.read_frame import ReadFrame
